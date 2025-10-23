@@ -176,7 +176,6 @@ function highlightActiveDonationOption(activeElement) {
 
 // Payment Modal Functions
 function openPaymentModal(planId) {
-    // Find plan data
     let planData = null;
     let categoryName = '';
     
@@ -240,7 +239,6 @@ function openDonationModal() {
     donationForm.reset();
     donationResult.style.display = 'none';
     
-    // Reset active states
     document.querySelectorAll('.amount-suggestion').forEach(el => {
         el.style.background = '';
         el.style.color = '';
@@ -268,13 +266,11 @@ async function handlePaymentSubmission(e) {
     const btnContent = submitBtn.querySelector('.btn-content');
     const btnLoading = submitBtn.querySelector('.btn-loading');
     
-    // Get form data
     const formData = new FormData(paymentForm);
     const customerName = formData.get('customerName');
     const email = formData.get('email');
     const phoneNumber = formData.get('phoneNumber');
     
-    // Validation
     if (!validatePhoneNumber(phoneNumber)) {
         showPaymentResult('Please enter a valid M-Pesa number in format 2547XXXXXXXX (12 digits)', false);
         return;
@@ -285,7 +281,6 @@ async function handlePaymentSubmission(e) {
         return;
     }
     
-    // Show loading state
     submitBtn.disabled = true;
     btnContent.style.display = 'none';
     btnLoading.style.display = 'inline';
@@ -295,9 +290,7 @@ async function handlePaymentSubmission(e) {
         
         const response = await fetch(`${API_BASE}/initiate-payment`, {
             method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 planId: currentPlanId,
                 phoneNumber: phoneNumber,
@@ -317,7 +310,6 @@ async function handlePaymentSubmission(e) {
                 </div>
             `, true);
             
-            // Start polling for payment status
             const reference = result.data.reference;
             await pollPaymentStatus(reference);
             
@@ -355,14 +347,12 @@ async function handleDonationSubmission(e) {
     const btnContent = submitBtn.querySelector('.btn-content');
     const btnLoading = submitBtn.querySelector('.btn-loading');
     
-    // Get form data
     const formData = new FormData(donationForm);
     const amount = formData.get('donationAmount');
     const donorName = formData.get('donorName');
     const donorMessage = formData.get('donorMessage');
     const donorPhone = formData.get('donorPhone');
     
-    // Validation
     if (!validatePhoneNumber(donorPhone)) {
         showDonationResult('Please enter a valid M-Pesa number in format 2547XXXXXXXX (12 digits)', false);
         return;
@@ -378,7 +368,6 @@ async function handleDonationSubmission(e) {
         return;
     }
     
-    // Show loading state
     submitBtn.disabled = true;
     btnContent.style.display = 'none';
     btnLoading.style.display = 'inline';
@@ -388,9 +377,7 @@ async function handleDonationSubmission(e) {
         
         const response = await fetch(`${API_BASE}/donate`, {
             method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 phoneNumber: donorPhone,
                 amount: parseFloat(amount),
@@ -411,7 +398,6 @@ async function handleDonationSubmission(e) {
                 </div>
             `, true);
             
-            // Start polling for donation status
             const reference = result.data.reference;
             await pollDonationStatus(reference);
             
@@ -444,7 +430,7 @@ async function handleDonationSubmission(e) {
 // Payment Status Polling
 async function pollPaymentStatus(reference) {
     let attempts = 0;
-    const maxAttempts = 30; // 5 minutes (10-second intervals)
+    const maxAttempts = 30;
     
     const poll = async () => {
         attempts++;
@@ -474,17 +460,15 @@ async function pollPaymentStatus(reference) {
                     </div>
                 `, true);
                 
-                // Redirect to WhatsApp after 3 seconds
                 setTimeout(() => {
-                    window.location.href = result.whatsappUrl;
+                    window.location.href = "https://wa.me/254781287381";
                 }, 3000);
                 
                 return;
             }
             
             if (result.success && result.status !== 'success' && attempts < maxAttempts) {
-                // Continue polling
-                setTimeout(poll, 10000); // Check every 10 seconds
+                setTimeout(poll, 10000);
             } else if (attempts >= maxAttempts) {
                 showPaymentResult(`
                     <div style="text-align: center;">
@@ -493,9 +477,9 @@ async function pollPaymentStatus(reference) {
                         <p style="margin-top: 0.5rem; color: var(--gray-600);">
                             Please contact support if payment was made
                         </p>
-                        <a href="https://wa.me/254781297381" 
+                        <a href="https://wa.me/254781287381" 
                            style="display: inline-block; margin-top: 1rem; padding: 0.5rem 1rem; background: var(--success); color: white; text-decoration: none; border-radius: 8px;">
-                            Contact Support
+                            Contact Support (+254 781 287 381)
                         </a>
                     </div>
                 `, false);
@@ -509,14 +493,13 @@ async function pollPaymentStatus(reference) {
         }
     };
     
-    // Start polling after 10 seconds
     setTimeout(poll, 10000);
 }
 
 // Donation Status Polling
 async function pollDonationStatus(reference) {
     let attempts = 0;
-    const maxAttempts = 20; // ~3.5 minutes
+    const maxAttempts = 20;
     
     const poll = async () => {
         attempts++;
@@ -534,7 +517,7 @@ async function pollDonationStatus(reference) {
                             Your donation has been confirmed successfully
                         </p>
                         <p style="margin-top: 1rem; font-size: 0.9rem;">
-                            We truly appreciate your support in helping us grow and improve our services.
+                            We truly appreciate your support in helping Chege Tech grow and improve our services.
                         </p>
                     </div>
                 `, true);
@@ -547,16 +530,20 @@ async function pollDonationStatus(reference) {
                 showDonationResult(`
                     <div style="text-align: center;">
                         <div style="font-size: 2rem; margin-bottom: 1rem;">⏰</div>
-                        <strong>Donation Check Complete</strong>
+                        <strong>Donation Verification Timeout</strong>
                         <p style="margin-top: 0.5rem; color: var(--gray-600);">
-                            Thank you for your support! If you made a donation, it will be processed shortly.
+                            Please contact support if your payment went through.
                         </p>
+                        <a href="https://wa.me/254781287381" 
+                           style="display: inline-block; margin-top: 1rem; padding: 0.5rem 1rem; background: var(--success); color: white; text-decoration: none; border-radius: 8px;">
+                            Contact Support (+254 781 287 381)
+                        </a>
                     </div>
-                `, true);
+                `, false);
             }
             
         } catch (error) {
-            console.error('Donation polling error:', error);
+            console.error('Polling error:', error);
             if (attempts < maxAttempts) {
                 setTimeout(poll, 10000);
             }
@@ -568,109 +555,64 @@ async function pollDonationStatus(reference) {
 
 // Utility Functions
 function validatePhoneNumber(phone) {
-    const regex = /^254[17]\d{8}$/;
-    return regex.test(phone);
+    return /^2547\d{8}$/.test(phone);
 }
 
 function formatPhoneNumber(e) {
-    let phone = e.target.value.trim();
-    phone = phone.replace(/\D/g, ''); // Remove non-digits
-    
-    if (phone.startsWith('0') && phone.length === 10) {
+    let phone = e.target.value.replace(/\D/g, '');
+    if (phone.startsWith('07')) {
         phone = '254' + phone.substring(1);
-    } else if (phone.startsWith('7') && phone.length === 9) {
-        phone = '254' + phone;
-    } else if (phone.startsWith('254') && phone.length === 12) {
-        // Already correct format
-    } else {
-        return; // Invalid format
     }
-    
     e.target.value = phone;
 }
 
 function formatDonorPhone(e) {
-    formatPhoneNumber(e);
+    let phone = e.target.value.replace(/\D/g, '');
+    if (phone.startsWith('07')) {
+        phone = '254' + phone.substring(1);
+    }
+    e.target.value = phone;
 }
 
-function showPaymentResult(message, isSuccess, type = 'success') {
-    paymentResult.innerHTML = message;
-    paymentResult.className = `payment-result ${isSuccess ? type : 'error'}`;
+function showPaymentResult(message, success, type = 'success') {
     paymentResult.style.display = 'block';
-    paymentResult.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    paymentResult.innerHTML = message;
+    paymentResult.className = `result-message ${success ? 'success' : 'error'} ${type}`;
 }
 
-function showDonationResult(message, isSuccess, type = 'success') {
-    donationResult.innerHTML = message;
-    donationResult.className = `payment-result ${isSuccess ? type : 'error'}`;
+function showDonationResult(message, success) {
     donationResult.style.display = 'block';
-    donationResult.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
-function showLoadingState() {
-    categoriesContainer.innerHTML = `
-        <div style="text-align: center; padding: 3rem;">
-            <div style="font-size: 2rem; margin-bottom: 1rem;">
-                <i class="fas fa-spinner fa-spin"></i>
-            </div>
-            <p>Loading premium services...</p>
-        </div>
-    `;
+    donationResult.innerHTML = message;
+    donationResult.className = `result-message ${success ? 'success' : 'error'}`;
 }
 
 function showError(message) {
     categoriesContainer.innerHTML = `
-        <div style="text-align: center; padding: 3rem; color: var(--error);">
-            <div style="font-size: 2rem; margin-bottom: 1rem;">❌</div>
+        <div class="error-state">
+            <div class="error-icon">⚠️</div>
             <p>${message}</p>
-            <button onclick="location.reload()" 
-                    style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer;">
-                Retry
-            </button>
+            <a href="https://wa.me/254781287381" target="_blank" class="error-support">
+                Contact Chege Tech Support (+254 781 287 381)
+            </a>
         </div>
     `;
 }
 
-// Service Health Check
+function showLoadingState() {
+    categoriesContainer.innerHTML = `
+        <div class="loading-state">
+            <div class="loader"></div>
+            <p>Loading subscription plans from Chege Tech...</p>
+        </div>
+    `;
+}
+
 async function checkServiceHealth() {
     try {
         const response = await fetch(`${API_BASE}/health`);
         const result = await response.json();
-        
-        if (!result.success) {
-            console.warn('Service health check warning:', result.message);
-        }
+        console.log('Service health:', result.status);
     } catch (error) {
-        console.error('Service health check failed:', error);
+        console.warn('API health check failed');
     }
 }
-
-// Smooth scrolling for navigation links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-});
-
-// Add loading animation to buttons
-document.addEventListener('submit', function(e) {
-    if (e.target.matches('form')) {
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        if (submitBtn) {
-            const btnContent = submitBtn.querySelector('.btn-content');
-            const btnLoading = submitBtn.querySelector('.btn-loading');
-            
-            if (btnContent && btnLoading) {
-                btnContent.style.display = 'none';
-                btnLoading.style.display = 'inline';
-            }
-        }
-    }
-});
