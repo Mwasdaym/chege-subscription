@@ -30,7 +30,10 @@ const subscriptionPlans = {
       'spotify': { name: 'Spotify Premium', price: 180, duration: '1 Month', features: ['Ad-free Music', 'Offline Downloads', 'High Quality Audio'] },
       'showmax': { name: 'Showmax Pro', price: 150, duration: '1 Month', features: ['Live Sports', 'Showmax Originals', 'Multiple Devices'] },
       'primevideo': { name: 'Prime Video', price: 200, duration: '1 Month', features: ['4K Streaming', 'Amazon Originals', 'Offline Viewing'] },
-      'hdopremium': { name: 'HDO Box Premium', price: 150, duration: '1 Month', features: ['No Ads', 'All Content Unlocked', 'HD Streaming'] }
+      'hdopremium': { name: 'HDO Box Premium', price: 150, duration: '1 Month', features: ['No Ads', 'All Content Unlocked', 'HD Streaming'] },
+      'disney': { name: 'Disney+', price: 500, duration: '1 Year', features: ['Family Entertainment', 'Marvel, Pixar, Star Wars', 'Offline Downloads'] },
+      'ytpremium': { name: 'YouTube Premium', price: 80, duration: '1 Month', features: ['Ad-Free Videos', 'Background Play', 'Offline Viewing'] },
+      'crunchyroll': { name: 'Crunchyroll Premium', price: 400, duration: '1 Year', features: ['All Anime Unlocked', 'Simulcasts', 'No Ads'] }
     }
   },
   'security': {
@@ -39,6 +42,8 @@ const subscriptionPlans = {
     color: '#4ECDC4',
     plans: {
       'expressvpn': { name: 'ExpressVPN', price: 150, duration: '1 Month', features: ['Lightning Fast', 'Secure Browsing', 'Global Servers'] },
+      'pornhub': { name: 'Pornhub Premium', price: 500, duration: '1 Year', features: ['No Ads', 'Unlocked Premium Videos', 'Live Shows Access'] },
+      'brazzers': { name: 'Brazzers Premium', price: 500, duration: '1 Year', features: ['Full HD Videos', 'Exclusive Content', 'Unlimited Access'] },
       'nordvpn': { name: 'NordVPN', price: 250, duration: '1 Month', features: ['Military Encryption', '6 Devices', 'No Logs Policy'], popular: true },
       'surfshark': { name: 'Surfshark VPN', price: 300, duration: '1 Month', features: ['Unlimited Devices', 'CleanWeb', 'Whitelister'] }
     }
@@ -51,10 +56,12 @@ const subscriptionPlans = {
       'whatsappbot': { name: 'WhatsApp Bot', price: 60, duration: 'Lifetime', features: ['Auto Replies', 'Bulk Messaging', '24/7 Support'] },
       'unlimitedpanels': { name: 'Unlimited Panels', price: 100, duration: 'Lifetime', features: ['All Services', 'Auto Updates', 'Premium Support'] },
       'canvapro': { name: 'Canva Pro', price: 80, duration: '1 Month', features: ['Premium Templates', 'Background Remover', 'Magic Resize'] },
-      'capcutpro': { name: 'CapCut Pro', price: 300, duration: '1 Month', features: ['Premium Effects', 'No Watermark', 'Cloud Storage'], popular: true }
+      'capcutpro': { name: 'CapCut Pro', price: 300, duration: '1 Month', features: ['Premium Effects', 'No Watermark', 'Cloud Storage'], popular: true },
+      'chatgptpremium': { name: 'ChatGPT Premium', price: 350, duration: '1 Month', features: ['Priority Access', 'Faster Responses', 'GPT-4 Access'] }
     }
   }
 };
+
 
 // Routes
 app.get('/', (req, res) => {
