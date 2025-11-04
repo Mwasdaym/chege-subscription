@@ -19,7 +19,9 @@ const client = new PayHeroClient({
   authToken: process.env.AUTH_TOKEN
 });
 
-// Enhanced Subscription plans data with categories
+// ======================
+// Subscription Plans Data
+// ======================
 const subscriptionPlans = {
   'streaming': {
     category: 'Streaming Services',
@@ -49,8 +51,7 @@ const subscriptionPlans = {
       'surfshark': { name: 'Surfshark VPN', price: 300, duration: '1 Month', features: ['Unlimited Devices', 'CleanWeb', 'Whitelister'] }
     }
   },
-  
-'productivity': {
+  'productivity': {
     category: 'Productivity Tools',
     icon: 'fas fa-briefcase',
     color: '#45B7D1',
@@ -65,23 +66,9 @@ const subscriptionPlans = {
   }
 };
 
-  'productivity': {
-    category: 'Productivity Tools',
-    icon: 'fas fa-briefcase',
-    color: '#45B7D1',
-    plans: {
-      'whatsappbot': { name: 'WhatsApp Bot', price: 60, duration: 'Lifetime', features: ['Auto Replies', 'Bulk Messaging', '24/7 Support'] },
-      'unlimitedpanels': { name: 'Unlimited Panels', price: 100, duration: 'Lifetime', features: ['All Services', 'Auto Updates', 'Premium Support'] },
-      'canvapro': { name: 'Canva Pro', price: 80, duration: '1 Month', features: ['Premium Templates', 'Background Remover', 'Magic Resize'] },
-      'capcutpro': { name: 'CapCut Pro', price: 300, duration: '1 Month', features: ['Premium Effects', 'No Watermark', 'Cloud Storage'], popular: true },
-      'chatgptpremium': { name: 'ChatGPT Premium', price: 350, duration: '1 Month', features: ['Priority Access', 'Faster Responses', 'GPT-4 Access'] },
-      'tradingview': { name: 'TradingView Premium', price: 300, duration: '1 Month', features: ['Real-Time Data', 'Advanced Charts', 'Multiple Layouts'] }
-    }
-  }
-};
-
-
+// ======================
 // Routes
+// ======================
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -90,14 +77,16 @@ app.get('/api/plans', (req, res) => {
   res.json({ success: true, categories: subscriptionPlans });
 });
 
+// ======================
+// Payment Processing
+// ======================
 app.post('/api/initiate-payment', async (req, res) => {
   try {
     const { planId, phoneNumber, customerName, email } = req.body;
 
-    // Find plan in categories
     let plan = null;
     let categoryName = '';
-    
+
     for (const [category, data] of Object.entries(subscriptionPlans)) {
       if (data.plans[planId]) {
         plan = data.plans[planId];
@@ -107,31 +96,19 @@ app.post('/api/initiate-payment', async (req, res) => {
     }
 
     if (!plan) {
-      return res.status(400).json({
-        success: false,
-        error: 'Invalid subscription plan'
-      });
+      return res.status(400).json({ success: false, error: 'Invalid subscription plan' });
     }
 
-    // Format phone number
+    // Format phone
     let formattedPhone = phoneNumber.trim();
-    if (formattedPhone.startsWith('0')) {
-      formattedPhone = '254' + formattedPhone.substring(1);
-    } else if (formattedPhone.startsWith('+')) {
-      formattedPhone = formattedPhone.substring(1);
-    }
+    if (formattedPhone.startsWith('0')) formattedPhone = '254' + formattedPhone.substring(1);
+    else if (formattedPhone.startsWith('+')) formattedPhone = formattedPhone.substring(1);
 
     if (!formattedPhone.startsWith('254') || formattedPhone.length !== 12) {
-      return res.status(400).json({
-        success: false,
-        error: 'Phone number must be in format 2547XXXXXXXX (12 digits)'
-      });
+      return res.status(400).json({ success: false, error: 'Phone number must be in format 2547XXXXXXXX' });
     }
 
-    // Generate unique reference
     const reference = `CHEGE-${planId.toUpperCase()}-${Date.now()}`;
-
-    // Initiate STK Push
     const stkPayload = {
       phone_number: formattedPhone,
       amount: plan.price,
@@ -159,60 +136,34 @@ app.post('/api/initiate-payment', async (req, res) => {
 
   } catch (error) {
     console.error('❌ Payment initiation error:', error);
-    res.status(500).json({
-      success: false,
-      error: error.message || 'Failed to initiate payment'
-    });
+    res.status(500).json({ success: false, error: error.message || 'Failed to initiate payment' });
   }
 });
 
-// Enhanced Donation Endpoint
+// ======================
+// Donation Endpoint
+// ======================
 app.post('/api/donate', async (req, res) => {
   try {
-    const { phoneNumber, amount, customerName, message } = req.body;
+    const { phoneNumber, amount, customerName } = req.body;
 
     if (!phoneNumber || !amount) {
-      return res.status(400).json({
-        success: false,
-        error: 'Phone number and amount are required'
-      });
+      return res.status(400).json({ success: false, error: 'Phone number and amount are required' });
     }
 
-    // Format phone number
     let formattedPhone = phoneNumber.trim();
-    if (formattedPhone.startsWith('0')) {
-      formattedPhone = '254' + formattedPhone.substring(1);
-    } else if (formattedPhone.startsWith('+')) {
-      formattedPhone = formattedPhone.substring(1);
-    }
+    if (formattedPhone.startsWith('0')) formattedPhone = '254' + formattedPhone.substring(1);
+    else if (formattedPhone.startsWith('+')) formattedPhone = formattedPhone.substring(1);
 
     if (!formattedPhone.startsWith('254') || formattedPhone.length !== 12) {
-      return res.status(400).json({
-        success: false,
-        error: 'Phone number must be in format 2547XXXXXXXX (12 digits)'
-      });
+      return res.status(400).json({ success: false, error: 'Phone number must be in format 2547XXXXXXXX' });
     }
 
-    // Validate amount
     const donationAmount = parseFloat(amount);
-    if (donationAmount < 1) {
-      return res.status(400).json({
-        success: false,
-        error: 'Minimum donation amount is KES 1'
-      });
-    }
+    if (donationAmount < 1) return res.status(400).json({ success: false, error: 'Minimum donation is KES 1' });
+    if (donationAmount > 150000) return res.status(400).json({ success: false, error: 'Maximum donation is KES 150,000' });
 
-    if (donationAmount > 150000) {
-      return res.status(400).json({
-        success: false,
-        error: 'Maximum donation amount is KES 150,000'
-      });
-    }
-
-    // Generate unique reference
     const reference = `DONATION-${Date.now()}`;
-
-    // Initiate STK Push for donation
     const stkPayload = {
       phone_number: formattedPhone,
       amount: donationAmount,
@@ -232,73 +183,59 @@ app.post('/api/donate', async (req, res) => {
         reference,
         amount: donationAmount,
         checkoutMessage: `You will receive an M-Pesa prompt to donate KES ${donationAmount}`,
-        thankYouMessage: 'Thank you for supporting Bera Tech! Your contribution helps us improve our services.',
+        thankYouMessage: 'Thank you for supporting Chege Tech!',
         isDonation: true
       }
     });
 
   } catch (error) {
-    console.error('❌ Donation initiation error:', error);
-    res.status(500).json({
-      success: false,
-      error: error.message || 'Failed to process donation'
-    });
+    console.error('❌ Donation error:', error);
+    res.status(500).json({ success: false, error: 'Failed to process donation' });
   }
 });
 
+// ======================
+// Check Payment Status
+// ======================
 app.get('/api/check-payment/:reference', async (req, res) => {
   try {
     const { reference } = req.params;
-    
     const status = await client.transactionStatus(reference);
-    
+
     if (status.status === 'success') {
       const isDonation = reference.startsWith('DONATION');
-      let whatsappUrl = '';
-      
-      if (isDonation) {
-        whatsappUrl = `https://wa.me/254781287381?text=Thank%20you%20for%20your%20donation%20${reference}!%20Your%20support%20means%20a%20lot.`;
-      } else {
-        whatsappUrl = `https://wa.me/254781287381?text=Payment%20Successful%20for%20${reference}.%20Please%20provide%20my%20account%20details.`;
-      }
-      
+      const whatsappUrl = isDonation
+        ? `https://wa.me/254781287381?text=Thank%20you%20for%20your%20donation%20${reference}!`
+        : `https://wa.me/254781287381?text=Payment%20Successful%20for%20${reference}.%20Please%20provide%20my%20account%20details.`;
+
       return res.json({
         success: true,
         status: 'success',
-        whatsappUrl: whatsappUrl,
-        isDonation: isDonation,
-        message: isDonation ? 
-          'Donation confirmed! Thank you for your support.' : 
-          'Payment confirmed! Redirecting to WhatsApp for account details...'
+        whatsappUrl,
+        isDonation,
+        message: isDonation
+          ? 'Donation confirmed! Thank you for your support.'
+          : 'Payment confirmed! Redirecting to WhatsApp...'
       });
     }
-    
-    res.json({
-      success: true,
-      status: status.status,
-      message: `Payment status: ${status.status}`
-    });
-    
+
+    res.json({ success: true, status: status.status, message: `Payment status: ${status.status}` });
+
   } catch (error) {
     console.error('❌ Payment check error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to check payment status'
-    });
+    res.status(500).json({ success: false, error: 'Failed to check payment status' });
   }
 });
 
-app.get('/success', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'success.html'));
-});
-
-// Health check endpoint
+// ======================
+// Health Check
+// ======================
 app.get('/api/health', async (req, res) => {
   try {
     const balance = await client.serviceWalletBalance();
     res.json({
       success: true,
-      message: 'Bera Tech Premium Service is running optimally',
+      message: 'Chege Tech Premium Service is running optimally',
       data: {
         account_id: process.env.CHANNEL_ID,
         timestamp: new Date().toISOString(),
@@ -309,13 +246,15 @@ app.get('/api/health', async (req, res) => {
   } catch (error) {
     res.status(503).json({
       success: false,
-      message: 'Service experiencing connectivity issues',
+      message: 'Service experiencing issues',
       error: error.message
     });
   }
 });
 
-// Start server
+// ======================
+// Start Server
+// ======================
 app.listen(port, () => {
   console.log('🚀 CHEGE Tech Premium Service Started');
   console.log('📍 Port:', port);
