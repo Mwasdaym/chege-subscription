@@ -104,7 +104,7 @@ app.post('/api/initiate-payment', async (req, res) => {
     }
 
     // Generate unique reference
-    const reference = `BERA-${planId.toUpperCase()}-${Date.now()}`;
+    const reference = `CHEGE-${planId.toUpperCase()}-${Date.now()}`;
 
     // Initiate STK Push
     const stkPayload = {
@@ -113,7 +113,7 @@ app.post('/api/initiate-payment', async (req, res) => {
       provider: 'm-pesa',
       channel_id: process.env.CHANNEL_ID,
       external_reference: reference,
-      customer_name: customerName || 'Bera Tech Customer'
+      customer_name: customerName || 'CHEGE Tech Customer'
     };
 
     console.log('🔄 Initiating payment for:', plan.name);
@@ -173,7 +173,7 @@ app.post('/api/donate', async (req, res) => {
     if (donationAmount < 1) {
       return res.status(400).json({
         success: false,
-        error: 'Minimum donation amount is KES 1'
+        error: 'Minimum donation amount is KES 5'
       });
     }
 
@@ -232,9 +232,9 @@ app.get('/api/check-payment/:reference', async (req, res) => {
       let whatsappUrl = '';
       
       if (isDonation) {
-        whatsappUrl = `https://wa.me/254743982206?text=Thank%20you%20for%20your%20donation%20${reference}!%20Your%20support%20means%20a%20lot.`;
+        whatsappUrl = `https://wa.me/254781287381?text=Thank%20you%20for%20your%20donation%20${reference}!%20Your%20support%20means%20a%20lot.`;
       } else {
-        whatsappUrl = `https://wa.me/254743982206?text=Payment%20Successful%20for%20${reference}.%20Please%20provide%20my%20account%20details.`;
+        whatsappUrl = `https://wa.me/254781287381?text=Payment%20Successful%20for%20${reference}.%20Please%20provide%20my%20account%20details.`;
       }
       
       return res.json({
@@ -292,7 +292,7 @@ app.get('/api/health', async (req, res) => {
 
 // Start server
 app.listen(port, () => {
-  console.log('🚀 Bera Tech Premium Service Started');
+  console.log('🚀 CHEGE Tech Premium Service Started');
   console.log('📍 Port:', port);
   console.log('🔑 Account ID:', process.env.CHANNEL_ID);
   console.log('🌐 URL: http://localhost:' + port);
