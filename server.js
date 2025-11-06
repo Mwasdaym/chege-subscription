@@ -27,10 +27,22 @@ const subscriptionPlans = {
     color: '#FF6B6B',
     plans: {
       'netflix': { name: 'Netflix Premium', price: 220, duration: '1 Month', features: ['4K Ultra HD', '4 Screens', 'Unlimited Content'], popular: true },
-      'spotify': { name: 'Spotify Premium', price: 180, duration: '1 Month', features: ['Ad-free Music', 'Offline Downloads', 'High Quality Audio'] },
       'showmax': { name: 'Showmax Pro', price: 150, duration: '1 Month', features: ['Live Sports', 'Showmax Originals', 'Multiple Devices'] },
       'primevideo': { name: 'Prime Video', price: 200, duration: '1 Month', features: ['4K Streaming', 'Amazon Originals', 'Offline Viewing'] },
-      'hdopremium': { name: 'HDO Box Premium', price: 150, duration: '1 Month', features: ['No Ads', 'All Content Unlocked', 'HD Streaming'] }
+      'hdopremium': { name: 'HDO Box Premium', price: 150, duration: '1 Month', features: ['No Ads', 'All Content Unlocked', 'HD Streaming'] },
+      'disney': { name: 'Disney+', price: 200, duration: '1 Month', category: 'Streaming', features: ['Movies & Series', 'HD Streaming', 'Ad-Free'], popular: true },
+     'disneyyear': { name: 'Disney+ (1 Year)', price: 1000, duration: '1 Year', category: 'Streaming', features: ['Movies & Series', 'HD Streaming', 'Ad-Free'], popular: true },
+    'paramount': { name: 'Paramount+', price: 300, duration: '1 Month', category: 'Streaming', features: ['Exclusive Shows', 'Movies', 'HD Streaming'], popular: false },
+  'peacock': { name: 'Peacock Premium', price: 150, duration: '1 Month', category: 'Streaming', features: ['Exclusive Movies', 'NBC Shows', 'Ad-Free Streaming'], popular: false },
+  'crunchyroll': { name: 'Crunchyroll Premium', price: 250, duration: '1 Month', category: 'Streaming', features: ['Anime Streaming', 'Simulcast Episodes', 'Ad-Free HD Viewing'], popular: false },
+  'discoveryplus': { name: 'Discovery+', price: 200, duration: '1 Month', category: 'Streaming', features: ['Documentaries', 'Reality Shows', 'Ad-Free Experience'], popular: false },
+  'showtime': { name: 'Showtime Anytime', price: 250, duration: '1 Month', category: 'Streaming', features: ['Exclusive Shows', 'HD Streaming', 'No Ads'], popular: false },
+  'starzplay': { name: 'StarzPlay', price: 300, duration: '1 Month', category: 'Streaming', features: ['Movies & Series', 'HD Quality', 'Ad-Free Streaming'], popular: false },
+  'appletv': { name: 'Apple TV+', price: 350, duration: '1 Month', category: 'Streaming', features: ['Apple Originals', '4K Streaming', 'Family Sharing'], popular: false },
+  'lionsgate': { name: 'Lionsgate+', price: 250, duration: '1 Month', category: 'Streaming', features: ['Exclusive Series', 'HD Streaming', 'Ad-Free'], popular: false },
+  'betplus': { name: 'BET+', price: 200, duration: '1 Month', category: 'Streaming', features: ['Black Culture Entertainment', 'HD Streaming', 'Exclusive Content'], popular: false },
+  'curiositystream': { name: 'CuriosityStream', price: 150, duration: '1 Month', category: 'Streaming', features: ['Educational Documentaries', 'HD Streaming', 'No Ads'], popular: false },
+
     }
   },
   'security': {
