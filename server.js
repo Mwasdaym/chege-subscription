@@ -160,7 +160,7 @@ app.post('/api/initiate-payment', async (req, res) => {
     }
 
     // Generate unique reference
-    const reference = `BERA-${planId.toUpperCase()}-${Date.now()}`;
+    const reference = `chege-${planId.toUpperCase()}-${Date.now()}`;
 
     // Initiate STK Push
     const stkPayload = {
@@ -329,7 +329,7 @@ app.get('/api/health', async (req, res) => {
     const balance = await client.serviceWalletBalance();
     res.json({
       success: true,
-      message: 'Bera Tech Premium Service is running optimally',
+      message: 'Chege Tech Premium Service is running optimally',
       data: {
         account_id: process.env.CHANNEL_ID,
         timestamp: new Date().toISOString(),
