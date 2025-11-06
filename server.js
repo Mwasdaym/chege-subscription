@@ -52,7 +52,7 @@ const subscriptionPlans = {
     plans: {
   'pornhub': { name: 'Pornhub Premium', price: 200, duration: '1 Month', category: 'Adult', features: ['HD Videos', 'No Ads', 'Exclusive Content'], popular: false },
   'brazzers': { name: 'Brazzers Lifetime', price: 900, duration: 'Lifetime', category: 'Adult', features: ['Unlimited Access', 'Full HD', 'No Ads'], popular: true }
-    }
+    },
 
   'security': {
     category: 'VPN & Security',
