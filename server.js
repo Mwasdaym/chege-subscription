@@ -207,7 +207,7 @@ app.post('/api/donate', async (req, res) => {
         reference,
         amount: donationAmount,
         checkoutMessage: `You will receive an M-Pesa prompt to donate KES ${donationAmount}`,
-        thankYouMessage: 'Thank you for supporting Bera Tech! Your contribution helps us improve our services.',
+        thankYouMessage: 'Thank you for supporting Chege Tech! Your contribution helps us improve our services.',
         isDonation: true
       }
     });
