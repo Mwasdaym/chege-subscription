@@ -36,7 +36,21 @@ const subscriptionPlans = {
       'pornhubpremium': { name: 'Pornhub Premium', price: 200, duration: '1 Month', features: ['HD Videos', 'No Ads', 'Full Access to Premium Content'], popular: true },
       'urbanvpn': { name: 'Urban VPN', price: 100, duration: '1 Month', features: ['Unlimited Bandwidth', 'Global Servers', 'Fast & Secure Connection'], popular: false },
       'brazzers': { name: 'Brazzers', price: 900, duration: 'Lifetime', features: ['Full Access', 'HD Videos', 'Exclusive Content'], popular: false },
-      'disney': { name: 'Disney+', price: 200, duration: '1 Month', yearly: 1000, features: ['HD Streaming', 'Disney Originals', 'Marvel, Pixar & Star Wars'], popular: false }
+      'disney': { name: 'Disney+', price: 200, duration: '1 Month', yearly: 1000, features: ['HD Streaming', 'Disney Originals', 'Marvel, Pixar & Star Wars'], popular: false },
+      'paramount': { name: 'Paramount+', price: 300, duration: '1 Month', features: ['HD Streaming', 'Exclusive Paramount Content', 'Ad-Free Experience'], popular: false },
+      'disney': { name: 'Disney+', price: 1000, duration: '1 Year', features: ['HD Streaming', 'Disney Originals', 'Marvel, Pixar & Star Wars'], popular: false },
+      'hulu': { name: 'Hulu', price: 250, duration: '1 Month', features: ['TV Shows & Movies', 'Ad-Free Option', 'Live TV'], popular: false },
+      'applemusic': { name: 'Apple Music', price: 250, duration: '1 Month', features: ['Ad-Free Music', 'Offline Listening', 'Lossless Audio'], popular: false },
+      'crunchyroll': { name: 'Crunchyroll Premium', price: 250, duration: '1 Month', features: ['Anime Streaming', 'Simulcast Episodes', 'Ad-Free HD Viewing'], popular: false },
+      'discoveryplus': { name: 'Discovery+', price: 200, duration: '1 Month', features: ['Documentaries', 'Reality Shows', 'Ad-Free Experience'], popular: false },
+      'showtime': { name: 'Showtime Anytime', price: 250, duration: '1 Month', features: ['Exclusive Shows', 'HD Streaming', 'No Ads'], popular: false },
+      'starzplay': { name: 'StarzPlay', price: 300, duration: '1 Month', features: ['Movies & Series', 'HD Quality', 'Ad-Free Streaming'], popular: false },
+      'appletv': { name: 'Apple TV+', price: 350, duration: '1 Month', features: ['Apple Originals', '4K Streaming', 'Family Sharing'], popular: false },
+      'lionsgate': { name: 'Lionsgate+', price: 250, duration: '1 Month', features: ['Exclusive Series', 'HD Streaming', 'Ad-Free'], popular: false },
+      'betplus': { name: 'BET+', price: 200, duration: '1 Month', features: ['Black Culture Entertainment', 'HD Streaming', 'Exclusive Content'], popular: false },
+      'curiositystream': { name: 'CuriosityStream', price: 150, duration: '1 Month', features: ['Educational Documentaries', 'HD Streaming', 'No Ads'], popular: false },
+      'youtubepremium': { name: 'YouTube Premium', price: 100, duration: '1 Month', features: ['Ad-Free Videos', 'Background Play', 'YouTube Music'], popular: false },
+      'deezer': { name: 'Deezer Premium', price: 200, duration: '1 Month', features: ['Ad-Free Music', 'Offline Listening', 'High Quality Audio'], popular: false },
       }
   },
   'security': {
