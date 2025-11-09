@@ -27,7 +27,17 @@ const subscriptionPlans = {
     color: '#FF6B6B',
     plans: {
       'netflix': { name: 'Netflix', price: 400, duration: '1 Month', features: ['HD Streaming', 'Multiple Devices', 'Original Shows'], popular: true },
+      'primevideo': { name: 'Prime Video', price: 100, duration: '1 Month', features: ['HD Streaming', 'Amazon Originals', 'Offline Viewing'], popular: true },
+      'primevideo_3m': { name: 'Prime Video (3 Months)', price: 250, duration: '3 Months', features: ['HD Streaming', 'Amazon Originals', 'Offline Viewing'], popular: true },
+      'primevideo_6m': { name: 'Prime Video (6 Months)', price: 550, duration: '6 Months', features: ['HD Streaming', 'Amazon Originals', 'Offline Viewing'], popular: true },
+      'primevideo_1y': { name: 'Prime Video (1 Year)', price: 1000, duration: '1 Year', features: ['HD Streaming', 'Amazon Originals', 'Offline Viewing'], popular: true },
+       'showmax_1m': { name: 'Showmax Pro (1 Month)', price: 100, duration: '1 Month', features: ['Live Sports', 'Showmax Originals', 'Multiple Devices'], logo: '/logos/showmax.png' },
+      'showmax_3m': { name: 'Showmax Pro (3 Months)', price: 250, duration: '3 Months', features: ['Live Sports', 'Showmax Originals', 'Multiple Devices'], logo: '/logos/showmax.png' },
+       'showmax_6m': { name: 'Showmax Pro (6 Months)', price: 500, duration: '6 Months', features: ['Live Sports', 'Showmax Originals', 'Multiple Devices'], logo: '/logos/showmax.png' },
+      'showmax_1y': { name: 'Showmax Pro (1 Year)', price: 900, duration: '1 Year', features: ['Live Sports', 'Showmax Originals', 'Multiple Devices'], logo: '/logos/showmax.png', popular: true },
       'peacock': { name: 'Peacock', price: 150, duration: '1 Month', features: ['Full HD Streaming', 'Exclusive NBC Content', 'No Ads Plan'] },
+       'peacock_1y': { name: 'Peacock Premium (1 Year)', price: 900, duration: '1 Year', features: ['Live Sports', 'NBC Originals', 'Movies & TV Shows'], logo: '/logos/peacock.png', popular: true },
+      'crunchyroll_1y': { name: 'Crunchyroll Premium (1 Year)', price: 900, duration: '1 Year', features: ['Anime Simulcasts', 'No Ads', 'Offline Viewing'], logo: '/logos/crunchyroll.png', popular: true },
       'paramount': { name: 'Paramount+', price: 300, duration: '1 Month', features: ['HD Streaming', 'Exclusive Paramount Content', 'Ad-Free Experience'] },
       'disney': { name: 'Disney+', price: 1000, duration: '1 Year', features: ['HD Streaming', 'Disney Originals', 'Marvel, Pixar & Star Wars'] },
       'hbomax': { name: 'HBO Max', price: 300, duration: '1 Month', features: ['HBO Originals', 'HD & 4K Streaming', 'Ad-Free'] },
@@ -50,7 +60,7 @@ const subscriptionPlans = {
     plans: {
       'spotify': { name: 'Spotify Premium', price: 200, duration: '1 Month', features: ['Ad-Free Music', 'Offline Mode', 'High-Quality Audio'] },
       'applemusic': { name: 'Apple Music', price: 250, duration: '1 Month', features: ['Ad-Free Music', 'Offline Listening', 'Lossless Audio'] },
-      'youtubepremium': { name: 'YouTube Premium', price: 300, duration: '1 Month', features: ['Ad-Free Videos', 'Background Play', 'YouTube Music'] },
+      'youtubepremium': { name: 'YouTube Premium', price: 100, duration: '1 Month', features: ['Ad-Free Videos', 'Background Play', 'YouTube Music'] },
       'deezer': { name: 'Deezer Premium', price: 200, duration: '1 Month', features: ['Ad-Free Music', 'Offline Listening', 'High Quality Audio'] },
       'tidal': { name: 'Tidal HiFi', price: 250, duration: '1 Month', features: ['HiFi Audio', 'Offline Mode', 'Ad-Free'] },
       'soundcloud': { name: 'SoundCloud Go+', price: 150, duration: '1 Month', features: ['Ad-Free Music', 'Offline Access', 'Full Catalog'] },
@@ -109,10 +119,10 @@ const subscriptionPlans = {
   icon: 'fas fa-heart',
   color: '#FF3366',
   plans: {
-    'brazzers': { name: 'Brazzers Premium', price: 1200, duration: '1 Month', features: ['HD Streaming', 'Unlimited Access', 'Exclusive Content'], popular: true },
-    'bangbros': { name: 'BangBros Premium', price: 1000, duration: '1 Month', features: ['HD Videos', 'Multiple Categories', 'Exclusive Scenes'] },
+    'brazzers': { name: 'Brazzers Premium', price: 1200, duration: 'lifetime', features: ['HD Streaming', 'Unlimited Access', 'Exclusive Content'], popular: true },
+    'bangbros': { name: 'BangBros Premium', price: 1000, duration: 'lifetime', features: ['HD Videos', 'Multiple Categories', 'Exclusive Scenes'] },
     'realitykings': { name: 'Reality Kings Premium', price: 900, duration: '1 Month', features: ['Full HD Content', 'Unlimited Access', 'Ad-Free'] },
-    'pornhub': { name: 'Pornhub Premium', price: 800, duration: '1 Month', features: ['Full HD Streaming', 'Exclusive Videos', 'No Ads'] }
+    'pornhub': { name: 'Pornhub Premium', price: 400, duration: '1 Month', features: ['Full HD Streaming', 'Exclusive Videos', 'No Ads'] }
   }
 }
 
