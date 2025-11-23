@@ -4,6 +4,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const { PayHeroClient } = require('payhero-devkit');
 const path = require('path');
+const nodemailer = require('nodemailer');
+const fs = require('fs');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -19,6 +21,76 @@ const client = new PayHeroClient({
   authToken: process.env.AUTH_TOKEN
 });
 
+// Initialize Email Transporter
+const emailTransporter = nodemailer.createTransporter({
+  service: process.env.EMAIL_SERVICE || 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+// Account Manager Class
+class AccountManager {
+  constructor() {
+    this.accountsFile = path.join(__dirname, 'accounts.json');
+    this.loadAccounts();
+  }
+
+  loadAccounts() {
+    try {
+      if (fs.existsSync(this.accountsFile)) {
+        this.accounts = JSON.parse(fs.readFileSync(this.accountsFile, 'utf8'));
+        console.log('✅ Accounts loaded successfully');
+      } else {
+        this.accounts = {};
+        this.saveAccounts();
+        console.log('📁 Created new accounts file');
+      }
+    } catch (error) {
+      this.accounts = {};
+      console.log('❌ Error loading accounts, created new file');
+    }
+  }
+
+  saveAccounts() {
+    fs.writeFileSync(this.accountsFile, JSON.stringify(this.accounts, null, 2));
+  }
+
+  getAvailableAccount(service) {
+    if (!this.accounts[service] || this.accounts[service].length === 0) {
+      return null;
+    }
+    
+    const availableAccount = this.accounts[service].find(acc => !acc.used);
+    if (availableAccount) {
+      availableAccount.used = true;
+      availableAccount.usedAt = new Date().toISOString();
+      this.saveAccounts();
+      return availableAccount;
+    }
+    return null;
+  }
+
+  getAccountStats() {
+    const stats = {};
+    Object.keys(this.accounts).forEach(service => {
+      const serviceAccounts = this.accounts[service];
+      stats[service] = {
+        total: serviceAccounts.length,
+        available: serviceAccounts.filter(acc => !acc.used).length,
+        used: serviceAccounts.filter(acc => acc.used).length
+      };
+    });
+    return stats;
+  }
+}
+
+const accountManager = new AccountManager();
+
+// Store pending transactions (in production, use a database)
+const pendingTransactions = new Map();
+
 // Enhanced Subscription plans data with categories
 const subscriptionPlans = {
   streaming: {
@@ -31,12 +103,12 @@ const subscriptionPlans = {
       'primevideo_3m': { name: 'Prime Video (3 Months)', price: 250, duration: '3 Months', features: ['HD Streaming', 'Amazon Originals', 'Offline Viewing'], popular: true },
       'primevideo_6m': { name: 'Prime Video (6 Months)', price: 550, duration: '6 Months', features: ['HD Streaming', 'Amazon Originals', 'Offline Viewing'], popular: true },
       'primevideo_1y': { name: 'Prime Video (1 Year)', price: 1000, duration: '1 Year', features: ['HD Streaming', 'Amazon Originals', 'Offline Viewing'], popular: true },
-       'showmax_1m': { name: 'Showmax Pro (1 Month)', price: 100, duration: '1 Month', features: ['Live Sports', 'Showmax Originals', 'Multiple Devices'], logo: '/logos/showmax.png' },
+      'showmax_1m': { name: 'Showmax Pro (1 Month)', price: 100, duration: '1 Month', features: ['Live Sports', 'Showmax Originals', 'Multiple Devices'], logo: '/logos/showmax.png' },
       'showmax_3m': { name: 'Showmax Pro (3 Months)', price: 250, duration: '3 Months', features: ['Live Sports', 'Showmax Originals', 'Multiple Devices'], logo: '/logos/showmax.png' },
-       'showmax_6m': { name: 'Showmax Pro (6 Months)', price: 500, duration: '6 Months', features: ['Live Sports', 'Showmax Originals', 'Multiple Devices'], logo: '/logos/showmax.png' },
+      'showmax_6m': { name: 'Showmax Pro (6 Months)', price: 500, duration: '6 Months', features: ['Live Sports', 'Showmax Originals', 'Multiple Devices'], logo: '/logos/showmax.png' },
       'showmax_1y': { name: 'Showmax Pro (1 Year)', price: 900, duration: '1 Year', features: ['Live Sports', 'Showmax Originals', 'Multiple Devices'], logo: '/logos/showmax.png', popular: true },
       'peacock': { name: 'Peacock', price: 150, duration: '1 Month', features: ['Full HD Streaming', 'Exclusive NBC Content', 'No Ads Plan'] },
-       'peacock_1y': { name: 'Peacock Premium (1 Year)', price: 900, duration: '1 Year', features: ['Live Sports', 'NBC Originals', 'Movies & TV Shows'], logo: '/logos/peacock.png', popular: true },
+      'peacock_1y': { name: 'Peacock Premium (1 Year)', price: 900, duration: '1 Year', features: ['Live Sports', 'NBC Originals', 'Movies & TV Shows'], logo: '/logos/peacock.png', popular: true },
       'crunchyroll_1y': { name: 'Crunchyroll Premium (1 Year)', price: 900, duration: '1 Year', features: ['Anime Simulcasts', 'No Ads', 'Offline Viewing'], logo: '/logos/crunchyroll.png', popular: true },
       'paramount': { name: 'Paramount+', price: 300, duration: '1 Month', features: ['HD Streaming', 'Exclusive Paramount Content', 'Ad-Free Experience'] },
       'disney': { name: 'Disney+', price: 1000, duration: '1 Year', features: ['HD Streaming', 'Disney Originals', 'Marvel, Pixar & Star Wars'] },
@@ -112,7 +184,62 @@ const subscriptionPlans = {
       'ubisoft': { name: 'Ubisoft+', price: 300, duration: '1 Month', features: ['Ubisoft Games Library', 'New Releases', 'Cloud Play'] },
       'geforcenow': { name: 'Nvidia GeForce Now', price: 350, duration: '1 Month', features: ['Cloud Gaming', 'High Performance', 'Cross-Device Access'] }
     }
-  };
+  }
+};
+
+// Email Service Functions
+async function sendAccountEmail(customerEmail, planName, accountDetails, customerName) {
+  try {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: customerEmail,
+      subject: `Your ${planName} Account Details - Bera Tech Premium`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0;">
+            <h1>🎯 Bera Tech Premium</h1>
+            <p>Your Premium Account is Ready!</p>
+          </div>
+          <div style="background: #f9f9f9; padding: 20px; border-radius: 0 0 10px 10px;">
+            <h2>Hello ${customerName},</h2>
+            <p>Thank you for purchasing <strong>${planName}</strong>. Here are your account details:</p>
+            
+            <div style="background: white; padding: 15px; border-radius: 5px; margin: 15px 0; border-left: 4px solid #667eea;">
+              <h3>🔐 Account Information:</h3>
+              ${accountDetails.email ? `<p><strong>Email:</strong> ${accountDetails.email}</p>` : ''}
+              ${accountDetails.username ? `<p><strong>Username:</strong> ${accountDetails.username}</p>` : ''}
+              ${accountDetails.password ? `<p><strong>Password:</strong> ${accountDetails.password}</p>` : ''}
+              ${accountDetails.activationCode ? `<p><strong>Activation Code:</strong> ${accountDetails.activationCode}</p>` : ''}
+              ${accountDetails.redeemLink ? `<p><strong>Redeem Link:</strong> <a href="${accountDetails.redeemLink}">Click here to activate</a></p>` : ''}
+              ${accountDetails.instructions ? `<p><strong>Instructions:</strong> ${accountDetails.instructions}</p>` : ''}
+            </div>
+
+            <div style="margin: 20px 0;">
+              <h3>📝 Important Notes:</h3>
+              <ul>
+                <li>Keep your account details secure</li>
+                <li>Do not share these credentials with anyone</li>
+                <li>If you face any issues, contact our support</li>
+              </ul>
+            </div>
+
+            <p>Need help? Contact us on WhatsApp: <a href="https://wa.me/254781287381">+254 781 287 381</a></p>
+          </div>
+          <div style="text-align: center; margin-top: 20px; color: #666; font-size: 12px;">
+            <p>&copy; 2024 Bera Tech Premium. All rights reserved.</p>
+          </div>
+        </div>
+      `
+    };
+
+    const result = await emailTransporter.sendMail(mailOptions);
+    console.log('✅ Account details email sent to:', customerEmail);
+    return { success: true, messageId: result.messageId };
+  } catch (error) {
+    console.error('❌ Email sending failed:', error);
+    return { success: false, error: error.message };
+  }
+}
 
 // Routes
 app.get('/', (req, res) => {
@@ -126,6 +253,14 @@ app.get('/api/plans', (req, res) => {
 app.post('/api/initiate-payment', async (req, res) => {
   try {
     const { planId, phoneNumber, customerName, email } = req.body;
+
+    // Validate email is provided
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email address is required to receive account details'
+      });
+    }
 
     // Find plan in categories
     let plan = null;
@@ -163,6 +298,15 @@ app.post('/api/initiate-payment', async (req, res) => {
 
     // Generate unique reference
     const reference = `CHEGE-${planId.toUpperCase()}-${Date.now()}`;
+
+    // Store transaction details for later use
+    pendingTransactions.set(reference, {
+      planId,
+      planName: plan.name,
+      customerEmail: email,
+      customerName: customerName || 'Customer',
+      amount: plan.price
+    });
 
     // Initiate STK Push
     const stkPayload = {
@@ -287,12 +431,40 @@ app.get('/api/check-payment/:reference', async (req, res) => {
     
     if (status.status === 'success') {
       const isDonation = reference.startsWith('DONATION');
-      let whatsappUrl = '';
       
+      if (!isDonation) {
+        // Get transaction details
+        const transaction = pendingTransactions.get(reference);
+        if (transaction) {
+          const { planId, planName, customerEmail, customerName } = transaction;
+          
+          // Get available account
+          const account = accountManager.getAvailableAccount(planId);
+          
+          if (account) {
+            // Send account details via email
+            const emailResult = await sendAccountEmail(customerEmail, planName, account, customerName);
+            
+            if (emailResult.success) {
+              console.log(`✅ Account sent to ${customerEmail} for ${planName}`);
+            } else {
+              console.log(`❌ Failed to send email to ${customerEmail}`);
+            }
+          } else {
+            console.log(`❌ No accounts available for ${planId}`);
+            // Fallback: Send WhatsApp message for manual account delivery
+          }
+          
+          // Clean up
+          pendingTransactions.delete(reference);
+        }
+      }
+
+      let whatsappUrl = '';
       if (isDonation) {
         whatsappUrl = `https://wa.me/254781287381?text=Thank%20you%20for%20your%20donation%20${reference}!%20Your%20support%20means%20a%20lot.`;
       } else {
-        whatsappUrl = `https://wa.me/254781287381?text=Payment%20Successful%20for%20${reference}.%20Please%20provide%20my%20account%20details.`;
+        whatsappUrl = `https://wa.me/254781287381?text=Payment%20Successful%20for%20${reference}.%20I%20have%20received%20my%20account%20details%20via%20email.`;
       }
       
       return res.json({
@@ -302,7 +474,7 @@ app.get('/api/check-payment/:reference', async (req, res) => {
         isDonation: isDonation,
         message: isDonation ? 
           'Donation confirmed! Thank you for your support.' : 
-          'Payment confirmed! Redirecting to WhatsApp for account details...'
+          'Payment confirmed! Account details sent to your email.'
       });
     }
     
@@ -321,6 +493,12 @@ app.get('/api/check-payment/:reference', async (req, res) => {
   }
 });
 
+// New endpoint to check account stats
+app.get('/api/account-stats', (req, res) => {
+  const stats = accountManager.getAccountStats();
+  res.json({ success: true, stats });
+});
+
 app.get('/success', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'success.html'));
 });
@@ -329,6 +507,8 @@ app.get('/success', (req, res) => {
 app.get('/api/health', async (req, res) => {
   try {
     const balance = await client.serviceWalletBalance();
+    const stats = accountManager.getAccountStats();
+    
     res.json({
       success: true,
       message: 'Bera Tech Premium Service is running optimally',
@@ -336,7 +516,8 @@ app.get('/api/health', async (req, res) => {
         account_id: process.env.CHANNEL_ID,
         timestamp: new Date().toISOString(),
         status: 'operational',
-        uptime: process.uptime()
+        uptime: process.uptime(),
+        account_stats: stats
       }
     });
   } catch (error) {
@@ -350,10 +531,12 @@ app.get('/api/health', async (req, res) => {
 
 // Start server
 app.listen(port, () => {
-  console.log('🚀 Chege Tech Premium Service Started');
+  console.log('🚀 Bera Tech Premium Service Started');
   console.log('📍 Port:', port);
   console.log('🔑 Account ID:', process.env.CHANNEL_ID);
+  console.log('📧 Email:', process.env.EMAIL_USER);
   console.log('🌐 URL: http://localhost:' + port);
   console.log('💝 Donation system: ACTIVE');
-  console.log('🎯 Categories: Streaming, Security, Productivity');
+  console.log('📨 Auto-email system: ACTIVE');
+  console.log('🎯 Categories: Streaming, Music, Productivity, VPN, Gaming');
 });
